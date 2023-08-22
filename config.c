@@ -199,6 +199,13 @@ static void config_host_handler(dlgcontrol *ctrl, dlgparam *dlg,
              */
             dlg_label_change(ctrl, dlg, "Serial line");
             dlg_editbox_set(ctrl, dlg, conf_get_str(conf, CONF_serline));
+        } else if (conf_get_int(conf, CONF_protocol) == PROT_PCAN) {
+            /*
+             * This label text is carefully chosen to contain an n,
+             * since that's the shortcut for the host name control.
+             */
+            dlg_label_change(ctrl, dlg, "Peak-CAN [netname rxid txid]");
+            dlg_editbox_set(ctrl, dlg, conf_get_str(conf, CONF_pcan));
         } else {
             dlg_label_change(ctrl, dlg, HOST_BOX_TITLE);
             dlg_editbox_set(ctrl, dlg, conf_get_str(conf, CONF_host));
@@ -207,6 +214,8 @@ static void config_host_handler(dlgcontrol *ctrl, dlgparam *dlg,
         char *s = dlg_editbox_get(ctrl, dlg);
         if (conf_get_int(conf, CONF_protocol) == PROT_SERIAL)
             conf_set_str(conf, CONF_serline, s);
+        else if (conf_get_int(conf, CONF_protocol) == PROT_PCAN)
+            conf_set_str(conf, CONF_pcan, s);
         else
             conf_set_str(conf, CONF_host, s);
         sfree(s);
@@ -232,6 +241,13 @@ static void config_port_handler(dlgcontrol *ctrl, dlgparam *dlg,
              */
             dlg_label_change(ctrl, dlg, "Speed");
             sprintf(buf, "%d", conf_get_int(conf, CONF_serspeed));
+        } else if (conf_get_int(conf, CONF_protocol) == PROT_PCAN) {
+            /*
+             * This label text is carefully chosen to contain a p,
+             * since that's the shortcut for the port control.
+             */
+            dlg_label_change(ctrl, dlg, "Speed [kbps]");
+            sprintf(buf, "%d", conf_get_int(conf, CONF_pcanbitrate));
         } else {
             dlg_label_change(ctrl, dlg, PORT_BOX_TITLE);
             if (conf_get_int(conf, CONF_port) != 0)
@@ -248,6 +264,8 @@ static void config_port_handler(dlgcontrol *ctrl, dlgparam *dlg,
 
         if (conf_get_int(conf, CONF_protocol) == PROT_SERIAL)
             conf_set_int(conf, CONF_serspeed, i);
+        else if (conf_get_int(conf, CONF_protocol) == PROT_PCAN)
+            conf_set_int(conf, CONF_pcanbitrate, i);
         else
             conf_set_int(conf, CONF_port, i);
     }
@@ -1861,6 +1879,7 @@ void setup_config_box(struct controlbox *b, bool midsession,
             c->radio.shortcuts[c->radio.nbuttons] =
                 (backends[i]->protocol == PROT_SSH ? 's' :
                  backends[i]->protocol == PROT_SERIAL ? 'r' :
+                 backends[i]->protocol == PROT_PCAN ? 'c' :
                  backends[i]->protocol == PROT_RAW ? 'w' :  /* FIXME unused */
                  NO_SHORTCUT);
             c->radio.buttondata[c->radio.nbuttons] =

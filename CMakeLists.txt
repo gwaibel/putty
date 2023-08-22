@@ -122,7 +122,8 @@ add_executable(plink
 # dependent, so that it only sets the SERIAL option on platforms where
 # that backend exists. For the moment, though, we have serial port
 # backends for both our platforms, so we can do this unconditionally.
-be_list(plink Plink SSH SERIAL OTHERBACKENDS)
+# TODO: PCAN backend only available for Windows. This breaks other platform builds
+be_list(plink Plink SSH SERIAL PCAN OTHERBACKENDS)
 target_link_libraries(plink
   eventloop noterminal console sshclient otherbackends settings network crypto
   utils

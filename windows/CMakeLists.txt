@@ -56,7 +56,9 @@ add_sources_from_current_dir(sshclient
 add_sources_from_current_dir(sftpclient
   sftp.c)
 add_sources_from_current_dir(otherbackends
-  serial.c)
+  serial.c
+  pcan.c
+  canapi2.c)
 add_sources_from_current_dir(agent
   agent-client.c)
 add_sources_from_current_dir(guiterminal
@@ -104,7 +106,7 @@ add_executable(putty
   help.c
   ${CMAKE_SOURCE_DIR}/stubs/no-console.c
   putty.rc)
-be_list(putty PuTTY SSH SERIAL OTHERBACKENDS)
+be_list(putty PuTTY SSH SERIAL PCAN OTHERBACKENDS)
 add_dependencies(putty generated_licence_h)
 target_link_libraries(putty
   guiterminal guimisc eventloop sshclient otherbackends settings network crypto
@@ -126,7 +128,7 @@ add_executable(puttytel
   ${CMAKE_SOURCE_DIR}/proxy/nocproxy.c
   ${CMAKE_SOURCE_DIR}/proxy/nosshproxy.c
   puttytel.rc)
-be_list(puttytel PuTTYtel SERIAL OTHERBACKENDS)
+be_list(puttytel PuTTYtel SERIAL PCAN OTHERBACKENDS)
 add_dependencies(puttytel generated_licence_h)
 target_link_libraries(puttytel
   guiterminal guimisc eventloop otherbackends settings network utils

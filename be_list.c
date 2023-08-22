@@ -92,6 +92,13 @@ const struct BackendVtable *const backends[] = {
     &sshconn_backend,
 #endif
 
+#if OTHERBACKENDS && PCAN
+    /*
+     * PEAK CAN backend, if available.
+     */
+    &pcan_backend,
+#endif
+
     /*
      * Done. Null pointer to mark the end of the list.
      */

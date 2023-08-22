@@ -446,6 +446,13 @@ int cmdline_process_param(const char *p, char *value,
                 conf_set_str(conf, CONF_serline,
                              conf_get_str(conf, CONF_host));
             }
+            else if (backends[i]->protocol == PROT_PCAN) {
+                /* Special handling: the 'where to connect to' argument will
+                 * have been placed into CONF_host, but for this protocol, it
+                 * needs to be in CONF_pcan */
+                conf_set_str(conf, CONF_pcan,
+                             conf_get_str(conf, CONF_host));
+            }
             return 1;
         }
     }

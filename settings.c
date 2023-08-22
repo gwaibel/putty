@@ -776,6 +776,8 @@ void save_open_settings(settings_w *sesskey, Conf *conf)
     write_setting_i(sesskey, "SerialStopHalfbits", conf_get_int(conf, CONF_serstopbits));
     write_setting_i(sesskey, "SerialParity", conf_get_int(conf, CONF_serparity));
     write_setting_i(sesskey, "SerialFlowControl", conf_get_int(conf, CONF_serflow));
+    write_setting_s(sesskey, "PCanCfg", conf_get_str(conf, CONF_pcan));
+    write_setting_i(sesskey, "PCanBitrate", conf_get_int(conf, CONF_pcanbitrate));
     write_setting_s(sesskey, "WindowClass", conf_get_str(conf, CONF_winclass));
     write_setting_b(sesskey, "ConnectionSharing", conf_get_bool(conf, CONF_ssh_connection_sharing));
     write_setting_b(sesskey, "ConnectionSharingUpstream", conf_get_bool(conf, CONF_ssh_connection_sharing_upstream));
@@ -1259,6 +1261,8 @@ void load_open_settings(settings_r *sesskey, Conf *conf)
     gppi(sesskey, "SerialStopHalfbits", 2, conf, CONF_serstopbits);
     gppi(sesskey, "SerialParity", SER_PAR_NONE, conf, CONF_serparity);
     gppi(sesskey, "SerialFlowControl", SER_FLOW_XONXOFF, conf, CONF_serflow);
+    gpps(sesskey, "PCanCfg", "", conf, CONF_pcan);
+    gppi(sesskey, "PCanBitrate", 125, conf, CONF_pcanbitrate);
     gpps(sesskey, "WindowClass", "", conf, CONF_winclass);
     gppb(sesskey, "ConnectionSharing", false,
          conf, CONF_ssh_connection_sharing);

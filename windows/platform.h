@@ -714,6 +714,11 @@ char *agent_named_pipe_name(void);
 extern const struct BackendVtable serial_backend;
 
 /*
+ * Exports from pcan.c.
+ */
+extern const struct BackendVtable pcan_backend;
+
+/*
  * Exports from jump-list.c.
  */
 #define JUMPLIST_SUPPORTED             /* suppress #defines in putty.h */
