@@ -272,6 +272,7 @@ static char *pcan_init(const BackendVtable *vt, Seat *seat,
     PCAN *pcan;
     int btr;
     char *clientname;
+    int xtd;
 
     /* No local authentication phase in this protocol */
     seat_set_trust_status(seat, false);
@@ -324,13 +325,13 @@ static char *pcan_init(const BackendVtable *vt, Seat *seat,
 
     /* stwpeak2.dll does a CAN HW reset here. But why should we od this? */
 
-
     /* Set RX filter */
-    cerr = CAN_SetClientParam(pcan->client, CAN_PARAM_EXACT_11BIT_FILTER, 1);
+    xtd = (pcan->rxid & 0x80000000u) ? 1 : 0;
+    cerr = CAN_SetClientParam(pcan->client, CAN_PARAM_EXACT_11BIT_FILTER, !xtd);
     if (cerr == CAN_ERR_OK) {
         TCANMsg msg = {
-            .ID = pcan->rxid & 0x7FFFFFFFFu,
-            .MSGTYPE = (pcan->rxid & 0x80000000u) ? MSGTYPE_EXTENDED : MSGTYPE_STANDARD,
+            .ID = pcan->rxid & ((xtd) ? CAN_MAX_EXTENDED_ID : CAN_MAX_STANDARD_ID),
+            .MSGTYPE = (xtd) ? MSGTYPE_EXTENDED : MSGTYPE_STANDARD,
         };
         cerr = CAN_RegisterMsg(pcan->client, pcan->net, &msg, &msg);
     }
