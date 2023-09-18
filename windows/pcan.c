@@ -30,9 +30,9 @@ struct PCAN {
 
 
 /*
- * Clear the CAN bus-off condition.
+ * Clear the CAN bus error conditions (BUS_LIGHT, BUS_HEAVY, BUS_OFF).
  */
-static void pcan_clear_busoff(PCAN *pcan)
+static void pcan_clear_buserr(PCAN *pcan)
 {
     DWORD err;
 
@@ -79,10 +79,13 @@ static bool pcan_read_message(PCAN *pcan, TCANMsg *msg)
             else if (msg->MSGTYPE == MSGTYPE_STATUS) {
                 // Handle busoff
                 DWORD status = *((DWORD *)&msg->DATA[0]);
-                if (status & CAN_ERR_BUSOFF)
+                if (status & CAN_ERR_ANYBUSERR)
                 {
-                    logeventf(pcan->logctx, "CAN bus-off, trying to restart...");
-                    pcan_clear_busoff(pcan);
+                    logeventf(pcan->logctx, "CAN bus error:%s%s%s, restarting...",
+                                            (status & CAN_ERR_BUSLIGHT) ? " BUS_LIGHT" :"",
+                                            (status & CAN_ERR_BUSHEAVY) ? " BUS_HEAVY" :"",
+                                            (status & CAN_ERR_BUSOFF) ? " BUS_OFF" :"");
+                    pcan_clear_buserr(pcan);
                 }
             } else {
                 // Unexpected message type, dump silently
@@ -501,12 +504,16 @@ static size_t pcan_sendbuffer(Backend *be)
         err = CAN_ERR_OK;
     }
 
-    if (err & CAN_ERR_BUSOFF) {
-        logeventf(pcan->logctx, "CAN bus-off, trying to restart...");
-        pcan_clear_busoff(pcan);
+    if (err & CAN_ERR_ANYBUSERR) {
+        logeventf(pcan->logctx, "CAN bus error:%s%s%s, restarting...",
+                                (err & CAN_ERR_BUSLIGHT) ? " BUS_LIGHT" :"",
+                                (err & CAN_ERR_BUSHEAVY) ? " BUS_HEAVY" :"",
+                                (err & CAN_ERR_BUSOFF) ? " BUS_OFF" :"");
+        pcan_clear_buserr(pcan);
         ret = 0;
     }
     else if (err != CAN_ERR_OK) {
+        logeventf(pcan->logctx, "CAN error: 0x%04X, ", err);
         ret = 0;
     }
     else {
